@@ -1,0 +1,14 @@
+With d as (
+  SELECT Person,sum(a.Sales) as TotalSales
+FROM `alien-cedar-469420-n9.superstore.sales` as a
+left join 
+(select *
+from `alien-cedar-469420-n9.superstore.rep_name`
+) b
+on b.Region = a.Region
+group by 1
+)
+
+select d.Person,d.TotalSales, avg(d.TotalSales) over() as Grand, case when d.TotalSales>avg(d.TotalSales) over() then 'Great'
+when d.TotalSales < avg(d.TotalSales) over() then 'Bad' else 'Okay' end as Flag
+from d
