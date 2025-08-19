@@ -1,0 +1,24 @@
+With d as (
+  SELECT Person,sum(a.Sales) as TotalSales
+FROM `alien-cedar-469420-n9.superstore.sales` as a
+left join 
+(select *
+from `alien-cedar-469420-n9.superstore.rep_name`
+) b
+on b.Region = a.Region
+group by 1
+)
+
+select Person, sum(d.TotalSales) as Total, (
+  select avg(d.TotalSales) from d
+) as Average, case when sum(d.TotalSales) > (
+  select avg(d.TotalSales) from d
+) then 'Above par'
+when sum(d.TotalSales)  = (
+  select avg(d.TotalSales) from d
+) then 'On par'
+when sum(d.TotalSales) < (
+  select avg(d.TotalSales) from d
+) then 'Below par' end as Flag
+from d
+group by 1
